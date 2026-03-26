@@ -83,6 +83,18 @@ body {
   color: var(--primary);
 }
 
+.nav-link {
+  @apply text-sm text-[var(--text-secondary)] hover:text-[var(--text)] transition;
+}
+
+.mobile-link {
+  @apply text-sm text-[var(--text)] hover:text-[var(--primary)] transition;
+}
+
+.btn-primary {
+  @apply px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] rounded-xl hover:opacity-90 transition;
+}
+
 .theme-btn {
   border: none;
   background: var(--primary);
