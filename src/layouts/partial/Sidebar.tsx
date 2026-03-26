@@ -1,11 +1,14 @@
+import { Link } from 'react-router-dom'
 import { 
   LayoutDashboard, 
   FolderKanban, 
   Settings, 
   Users,
-  BarChart3,
   X,
-  Plus
+  Plus,
+  Building2,
+  Shield,
+  Tag
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -14,10 +17,13 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', active: false },
-  { icon: FolderKanban, label: 'Boards', active: true },
-  { icon: Users, label: 'Team', active: false },
-  { icon: BarChart3, label: 'Analytics', active: false },
+  { icon: LayoutDashboard, label: 'Dashboard', active: false, path: '/dashboard' },
+  { icon: FolderKanban, label: 'Projects', active: false, path: '/projects' },
+  { icon: FolderKanban, label: 'Boards', active: true, path: '/boards' },
+  { icon: Users, label: 'Team', active: false, path: '/team' },
+  { icon: Building2, label: 'Departments', active: false, path: '/departments' },
+  { icon: Shield, label: 'Roles', active: false, path: '/roles' },
+  { icon: Tag, label: 'Tags', active: false, path: '/tags' },
 ]
 
 const bottomMenuItems = [
@@ -72,8 +78,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           <div className="space-y-1">
             {menuItems.map((item) => (
-              <button
+              <Link
                 key={item.label}
+                to={item.path}
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl
                   text-sm font-medium transition-colors
@@ -88,7 +95,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 {item.active && (
                   <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
                 )}
-              </button>
+              </Link>
             ))}
           </div>
 
