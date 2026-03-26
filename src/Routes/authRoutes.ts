@@ -41,6 +41,26 @@ const authRoutes: AppRoute[] = [
         layouts: [BoardLayout],
     },
     {
+        path: '/team',
+        lazy: () => import('../pages/(auth)/team'),
+        layouts: [AuthLayout],
+    },
+    {
+        path: '/departments',
+        lazy: () => import('../pages/(auth)/departments'),
+        layouts: [AuthLayout],
+    },
+    {
+        path: '/roles',
+        lazy: () => import('../pages/(auth)/roles'),
+        layouts: [AuthLayout],
+    },
+    {
+        path: '/tags',
+        lazy: () => import('../pages/(auth)/tags'),
+        layouts: [AuthLayout],
+    },
+    {
         path: '/settings',
         lazy: () => import('../pages/(auth)/settings'),
         layouts: [AuthLayout],

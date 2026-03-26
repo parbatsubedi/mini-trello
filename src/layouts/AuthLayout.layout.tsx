@@ -11,7 +11,11 @@ import {
   Bell,
   Search,
   ChevronDown,
-  User
+  User,
+  Users,
+  Building2,
+  Shield,
+  Tag
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -19,6 +23,10 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: FolderKanban, label: 'Projects', path: '/projects' },
   { icon: History, label: 'Activity', path: '/activity' },
+  { icon: Users, label: 'Team', path: '/team' },
+  { icon: Building2, label: 'Departments', path: '/departments' },
+  { icon: Shield, label: 'Roles', path: '/roles' },
+  { icon: Tag, label: 'Tags', path: '/tags' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ]
 
