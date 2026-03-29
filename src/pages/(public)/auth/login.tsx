@@ -1,9 +1,47 @@
 import { motion } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useLogin } from '../../../hooks/auth/useLogin'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, seterror] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { mutate: login } = useLogin()
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    seterror(null)
+    setIsLoading(true)
+
+    try {
+      login({ email, password },
+        {
+          onSuccess: (data) => {
+            console.log('Login successful:', data)
+
+            // Redirect to dashboard or home page
+            navigate('/dashboard')
+          },
+          onError: (err: any) => {
+            seterror(err.response?.data?.message || 'Login failed. Please try again.')
+          },
+          onSettled: () => {
+            setIsLoading(false)
+          }
+        }
+      )
+    } catch (err: any) {
+      seterror(err.response?.data?.message || 'An unexpected error occurred. Please try again.')
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -47,7 +85,7 @@ export default function LoginPage() {
             <p className="text-[var(--text-secondary)] text-center mt-2">Sign in to continue to your workspace</p>
           </motion.div>
 
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleLogin} className="mt-8 space-y-5">
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -57,6 +95,8 @@ export default function LoginPage() {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                 <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   placeholder="you@example.com"
                   className="w-full pl-12 pr-4 py-3.5 bg-[var(--bg)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-all"
@@ -73,6 +113,8 @@ export default function LoginPage() {
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                 <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-12 pr-14 py-3.5 bg-[var(--bg)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-all"
@@ -101,13 +143,14 @@ export default function LoginPage() {
             </motion.div>
 
             <motion.button
+              disabled={isLoading}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              type="button"
+              type="submit"
               className="w-full py-3.5 bg-gradient-to-r from-[var(--primary)] to-purple-500 text-white font-semibold rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 group"
             >
-              Sign In
+              {isLoading ? 'Signing in ...' : 'Sign In'}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </form>
