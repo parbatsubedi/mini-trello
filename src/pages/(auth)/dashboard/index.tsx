@@ -8,29 +8,8 @@ import {
   MoreHorizontal,
   Plus
 } from 'lucide-react'
-
-const stats = [
-  { label: 'Total Projects', value: '12', icon: FolderKanban, change: '+2 this month', color: 'bg-blue-500' },
-  { label: 'Completed Tasks', value: '148', icon: CheckCircle2, change: '+24 this week', color: 'bg-green-500' },
-  { label: 'In Progress', value: '23', icon: Clock, change: '5 due soon', color: 'bg-yellow-500' },
-  { label: 'Efficiency', value: '94%', icon: TrendingUp, change: '+3% vs last month', color: 'bg-purple-500' },
-]
-
-const recentProjects = [
-  { id: 1, name: 'Website Redesign', progress: 75, members: 4, tasks: 24, status: 'active' },
-  { id: 2, name: 'Mobile App Launch', progress: 45, members: 6, tasks: 32, status: 'active' },
-  { id: 3, name: 'Marketing Campaign', progress: 90, members: 3, tasks: 15, status: 'review' },
-  { id: 4, name: 'Backend Migration', progress: 30, members: 5, tasks: 28, status: 'active' },
-  { id: 5, name: 'Brand Guidelines', progress: 100, members: 2, tasks: 8, status: 'completed' },
-]
-
-const recentActivity = [
-  { id: 1, user: 'Sarah K.', action: 'completed task', target: 'Design homepage mockup', time: '2 hours ago', avatar: 'SK' },
-  { id: 2, user: 'Mike R.', action: 'created', target: 'New task: API Integration', time: '3 hours ago', avatar: 'MR' },
-  { id: 3, user: 'Emily W.', action: 'commented on', target: 'Login page design', time: '5 hours ago', avatar: 'EW' },
-  { id: 4, user: 'John D.', action: 'moved', target: 'Task to Done', time: '6 hours ago', avatar: 'JD' },
-  { id: 5, user: 'Lisa M.', action: 'added', target: '3 new members', time: '1 day ago', avatar: 'LM' },
-]
+import { useDashboard } from '../../../hooks/useDashboard'
+import { AlertOverlay } from '../../../components/alert/Alert'
 
 const statusColors = {
   active: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -39,6 +18,62 @@ const statusColors = {
 }
 
 export default function DashboardPage() {
+  const { data, isLoading, isError, error } = useDashboard()
+
+
+const stats = [
+  {
+    label: 'Total Projects',
+    value: data?.stats.totalProjects ?? '...',
+    icon: FolderKanban,
+    change: '+2 this month',
+    color: 'bg-blue-500'
+  },
+  {
+    label: 'Completed Tasks',
+    value: data?.stats.completedTasks ?? '...',
+    icon: CheckCircle2,
+    change: '+24 this week',
+    color: 'bg-green-500'
+  },
+  {
+    label: 'Pending Tasks',
+    value: data?.stats.pendingTasks ?? '...',
+    icon: Clock,
+    change: '5 due soon',
+    color: 'bg-yellow-500'
+  },
+  {
+    label: 'Efficiency',
+    value: `${data ? ((data.stats.completedTasks / data.stats.totalTasks) * 100).toFixed(1) : '...'}%`,
+    icon: TrendingUp,
+    change: '+3% vs last month',
+    color: 'bg-purple-500'
+  },
+  {
+    label: 'Total Tasks',
+    value: data?.stats.totalTasks ?? '...',
+    icon: CheckCircle2,
+    change: '+10 this week',
+    color: 'bg-teal-500'
+  }
+]
+
+const recentProjects = data?.recentProjects ?? []
+const recentActivity = data?.recentActivity ?? []
+
+if (isLoading) {
+  return <AlertOverlay type="loading" message="Loading dashboard data..." />
+}
+
+if (isError) {
+  return (
+    <AlertOverlay
+      type="error"
+      message={error instanceof Error ? error.message : 'Something went wrong'}
+    />
+  )
+}
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -117,7 +152,7 @@ export default function DashboardPage() {
                       <div className="flex -space-x-2">
                         {[1, 2, 3].map((i) => (
                           <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 border-2 border-[var(--card)] flex items-center justify-center">
-                            <span className="text-white text-xs font-medium">{String.fromCharCode(64 + i + project.id)}</span>
+                            <span className="text-white text-xs font-medium">{String.fromCharCode(64 + i + Number(project.id))}</span>
                           </div>
                         ))}
                         {project.members > 3 && (

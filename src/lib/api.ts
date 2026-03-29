@@ -41,14 +41,22 @@ class ApiService {
     })
 
     if (response.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login' // hard redirect
+      this.clearToken()
+      window.location.href = '/login'
       throw new Error('Unauthorized')
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'An error occurred' }))
-      throw new Error(error.message || 'Request failed')
+      let errorMessage = 'Request failed'
+
+      try {
+        const error = await response.json()
+        errorMessage = error?.message || errorMessage
+      } catch {}
+
+      const error = new Error(errorMessage)
+      ;(error as any).status = response.status
+      throw error
     }
 
     return response.json()
