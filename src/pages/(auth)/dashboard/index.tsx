@@ -100,6 +100,7 @@ if (isError) {
                   <th className="text-left px-5 py-3 text-sm font-medium text-[var(--text-secondary)]">Members</th>
                   <th className="text-left px-5 py-3 text-sm font-medium text-[var(--text-secondary)]">Tasks</th>
                   <th className="text-left px-5 py-3 text-sm font-medium text-[var(--text-secondary)]">Status</th>
+                  <th className="text-left px-5 py-3 text-sm font-medium text-[var(--text-secondary)]">Last Updated</th>
                   <th className="px-5 py-3"></th>
                 </tr>
               </thead>
@@ -140,6 +141,7 @@ if (isError) {
                         {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                       </span>
                     </td>
+                    <td className="px-5 py-4 text-sm text-[var(--text-secondary)]">{project.updated_at}</td>
                     <td className="px-5 py-4">
                       <button className="p-1.5 rounded-lg hover:bg-[var(--border)] transition-colors">
                         <MoreHorizontal className="w-4 h-4 text-[var(--text-secondary)]" />

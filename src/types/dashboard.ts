@@ -12,7 +12,7 @@ export interface RecentProject {
     members: number
     tasks: number
     status: 'active' | 'completed' | 'on-hold'
-    lastUpdated: string
+    updated_at: string
 }
 
 export interface RecentActivity {
