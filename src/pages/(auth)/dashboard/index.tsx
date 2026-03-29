@@ -20,44 +20,16 @@ const statusColors = {
 export default function DashboardPage() {
   const { data, isLoading, isError, error } = useDashboard()
 
-
-const stats = [
-  {
-    label: 'Total Projects',
-    value: data?.stats.totalProjects ?? '...',
-    icon: FolderKanban,
-    change: '+2 this month',
-    color: 'bg-blue-500'
-  },
-  {
-    label: 'Completed Tasks',
-    value: data?.stats.completedTasks ?? '...',
-    icon: CheckCircle2,
-    change: '+24 this week',
-    color: 'bg-green-500'
-  },
-  {
-    label: 'Pending Tasks',
-    value: data?.stats.pendingTasks ?? '...',
-    icon: Clock,
-    change: '5 due soon',
-    color: 'bg-yellow-500'
-  },
-  {
-    label: 'Efficiency',
-    value: `${data ? ((data.stats.completedTasks / data.stats.totalTasks) * 100).toFixed(1) : '...'}%`,
-    icon: TrendingUp,
-    change: '+3% vs last month',
-    color: 'bg-purple-500'
-  },
-  {
-    label: 'Total Tasks',
-    value: data?.stats.totalTasks ?? '...',
-    icon: CheckCircle2,
-    change: '+10 this week',
-    color: 'bg-teal-500'
-  }
-]
+  const icons = [
+    FolderKanban,
+    CheckCircle2,
+    Clock,
+    TrendingUp,
+  ]
+  const stats = (data?.stats ?? []).map((stat, index) => ({
+    ...stat,
+    icon: icons[index], //maps the icons from above array through the index of array in the stats response
+  }))
 
 const recentProjects = data?.recentProjects ?? []
 const recentActivity = data?.recentActivity ?? []

@@ -1,8 +1,8 @@
 export interface DashboardStats {
-    totalProjects: number
-    totalTasks: number
-    completedTasks: number
-    pendingTasks: number
+    label: string
+    value: number
+    change: string
+    color: string
 }
 
 export interface RecentProject {
@@ -27,7 +27,7 @@ export interface RecentActivity {
 }
 
 export interface DashboardData {
-    stats: DashboardStats
+    stats: DashboardStats[]
     recentProjects: RecentProject[]
     recentActivity: RecentActivity[]
 }
