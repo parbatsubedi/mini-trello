@@ -18,6 +18,7 @@ import {
   Tag
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { authService } from '../services/auth.service'
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -33,6 +34,11 @@ const navItems = [
 export default function AuthLayout({ children }: PropsWithChildren) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const handleLogout = () => {
+    authService.logout()
+    localStorage.removeItem('token')
+    window.location.href = '/login'
+  }
   const location = useLocation()
 
   return (
@@ -93,7 +99,8 @@ export default function AuthLayout({ children }: PropsWithChildren) {
 
         {/* Bottom Section */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--border)]">
-          <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-all">
+          <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text)] transition-all"
+            onClick={handleLogout}>
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>
           </button>
@@ -160,7 +167,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
                     Settings
                   </Link>
                   <div className="border-t border-[var(--border)]">
-                    <button className="flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-[var(--border)] w-full">
+                    <button className="flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-[var(--border)] w-full" onClick={handleLogout}>
                       <LogOut className="w-4 h-4" />
                       Sign Out
                     </button>
