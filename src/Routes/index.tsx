@@ -6,7 +6,8 @@ import authRoutes from './authRoutes'
 export interface AppRoute {
     path: string
     lazy: () => Promise<{ default: ComponentType }>
-    layouts?: ComponentType<PropsWithChildren>[]
+    layouts?: ComponentType<PropsWithChildren>[],
+    guards?: ComponentType<PropsWithChildren>[]
 }
 
 const routes: AppRoute[] = [
