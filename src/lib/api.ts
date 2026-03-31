@@ -42,8 +42,17 @@ class ApiService {
 
     if (response.status === 401) {
       this.clearToken()
-      window.location.href = '/login'
-      throw new Error('Unauthorized')
+
+      let message = 'Unauthorized'
+
+      try {
+        const error = await response.json()
+        message = error?.message || message
+      } catch {}
+
+      const err = new Error(message) as any
+      err.status = 401
+      throw err
     }
 
     if (!response.ok) {

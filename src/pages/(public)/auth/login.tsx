@@ -5,41 +5,36 @@ import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../../../hooks/auth/useLogin'
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
-
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, seterror] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
-  const { mutate: login } = useLogin()
+  const { mutateAsync: login, isPending, error } = useLogin()
+
+
+  const getErrorMessage = (error: unknown) => {
+    if (typeof error === 'object' && error !== null) {
+      const err = error as any
+
+      return (
+        err?.message ||
+        err?.data?.message ||
+        'Login failed'
+      )
+    }
+    return 'Login failed'
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    seterror(null)
-    setIsLoading(true)
 
     try {
-      login({ email, password },
-        {
-          onSuccess: (data) => {
-            console.log('Login successful:', data)
-
-            // Redirect to dashboard or home page
-            navigate('/dashboard')
-          },
-          onError: (err: any) => {
-            seterror(err.response?.data?.message || 'Login failed. Please try again.')
-          },
-          onSettled: () => {
-            setIsLoading(false)
-          }
-        }
-      )
+      await login({ email, password })
+      navigate('/dashboard')
     } catch (err: any) {
-      seterror(err.response?.data?.message || 'An unexpected error occurred. Please try again.')
-      setIsLoading(false)
+      // handled via mutation error
     }
   }
 
@@ -142,7 +137,12 @@ export default function LoginPage() {
               <a href="#" className="text-sm text-[var(--primary)] hover:underline">Forgot password?</a>
             </motion.div>
 
-            <motion.button
+{error && (
+    <p className="text-red-500 text-sm text-center">
+      {getErrorMessage(error)}
+    </p>
+  )}
+            {/* <motion.button
               disabled={isLoading}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -151,6 +151,14 @@ export default function LoginPage() {
               className="w-full py-3.5 bg-gradient-to-r from-[var(--primary)] to-purple-500 text-white font-semibold rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 group"
             >
               {isLoading ? 'Signing in ...' : 'Sign In'}
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button> */}
+            <motion.button
+              disabled={isPending}
+              type="submit"
+              className="w-full py-3.5 bg-gradient-to-r from-[var(--primary)] to-purple-500 text-white font-semibold rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 group"
+            >
+              {isPending ? 'Signing in ...' : 'Sign In'}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </form>
@@ -205,6 +213,11 @@ export default function LoginPage() {
           </a>
         </motion.p>
       </motion.div>
+      {error && (
+        <p className="text-red-500 text-sm text-center mt-2">
+          {(error as any)?.response?.data?.message || 'Login failed. Please try again.'}
+        </p>
+      )}
     </div>
   )
 }
