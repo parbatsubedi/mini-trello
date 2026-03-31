@@ -48,15 +48,19 @@ class ApiService {
 
     if (!response.ok) {
       let errorMessage = 'Request failed'
+      let errorData: any = null
 
       try {
         const error = await response.json()
         errorMessage = error?.message || errorMessage
+        errorData = error?.data || null //capture validation errors
       } catch {}
 
-      const error = new Error(errorMessage)
-      ;(error as any).status = response.status
-      throw error
+      const err = new Error(errorMessage) as any
+      err.status = response.status
+      err.data = errorData //attach validation errors
+
+      throw err
     }
 
     return response.json()
