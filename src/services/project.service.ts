@@ -1,6 +1,6 @@
 import { api } from "../lib/api"
 import type { ApiResponse } from "../types/apiResponse"
-import type { Project } from "../types/project"
+import type { Project, ProjectPayload } from "../types/project"
 
 interface ProjectQueryParams {
   page?: number
@@ -19,5 +19,17 @@ export const projectService = {
     if (params.status && params.status !== 'All') query.append('status', params.status)
 
     return api.get<ApiResponse<Project[]>>(`/projects?${query.toString()}`)
+  },
+
+  updateProject: (projectId: number, data: ProjectPayload) => {
+    return api.put(`/projects/${projectId}`, data)
+  },
+
+  deleteProject: (projectId: number) => {
+    return api.delete(`/projects/${projectId}`)
+  },
+
+  createProject : (data: ProjectPayload) => {
+    return api.post(`/projects`, data)
   }
 }
