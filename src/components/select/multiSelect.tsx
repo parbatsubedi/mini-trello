@@ -6,13 +6,32 @@ export interface MultiSelectOption {
   label: string
 }
 
+export interface MultiSelectStyles {
+  /** Overrides the trigger/input area wrapper */
+  trigger?: string
+  /** Overrides individual selected-item chips */
+  chip?: string
+  /** Overrides the dropdown panel */
+  dropdown?: string
+  /** Overrides each dropdown list item */
+  dropdownItem?: string
+}
+
 interface MultiSelectProps {
   options: MultiSelectOption[]
   value: (string | number)[]
   onChange: (selected: (string | number)[]) => void
+  placeholder?: string
+  styles?: MultiSelectStyles
 }
 
-export function MultiSelect({ options, value, onChange }: MultiSelectProps) {
+export function MultiSelect({
+  options,
+  value,
+  onChange,
+  placeholder = 'Select...',
+  styles = {},
+}: MultiSelectProps) {
   const [open, setOpen] = useState(false)
 
   const selectedOptions = options.filter((o) => value.includes(o.id))
@@ -29,25 +48,32 @@ export function MultiSelect({ options, value, onChange }: MultiSelectProps) {
 
   return (
     <div className="relative w-full">
-      
-      {/* Input Area */}
+
+      {/* Trigger / input area */}
       <div
         onClick={() => setOpen(!open)}
-        className="min-h-[44px] flex flex-wrap items-center gap-2 px-3 py-2 border rounded-lg bg-[var(--card)] border-[var(--border)] cursor-pointer"
+        className={
+          styles.trigger ??
+          'min-h-[44px] flex flex-wrap items-center gap-2 px-3 py-2 border rounded-lg bg-[var(--card)] border-[var(--border)] cursor-pointer'
+        }
       >
         {selectedOptions.length === 0 && (
           <span className="text-sm text-[var(--text-secondary)]">
-            Select team members
+            {placeholder}
           </span>
         )}
 
         {selectedOptions.map((item) => (
           <div
             key={item.id}
-            className="flex items-center gap-1 px-2 py-1 bg-[var(--primary)] text-white rounded-md text-sm"
+            className={
+              styles.chip ??
+              'flex items-center gap-1 px-2 py-1 bg-[var(--primary)] text-white rounded-md text-sm'
+            }
           >
             {item.label}
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 remove(item.id)
@@ -63,7 +89,12 @@ export function MultiSelect({ options, value, onChange }: MultiSelectProps) {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute mt-2 w-full bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg z-50 max-h-60 overflow-auto">
+        <div
+          className={
+            styles.dropdown ??
+            'absolute mt-2 w-full bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg z-50 max-h-60 overflow-auto'
+          }
+        >
           {availableOptions.length === 0 && (
             <div className="p-3 text-sm text-[var(--text-secondary)]">
               No options left
@@ -74,7 +105,10 @@ export function MultiSelect({ options, value, onChange }: MultiSelectProps) {
             <div
               key={option.id}
               onClick={() => select(option.id)}
-              className="px-3 py-2 cursor-pointer hover:bg-[var(--bg)] text-sm text-[var(--text)]"
+              className={
+                styles.dropdownItem ??
+                'px-3 py-2 cursor-pointer hover:bg-[var(--bg)] text-sm text-[var(--text)]'
+              }
             >
               {option.label}
             </div>
