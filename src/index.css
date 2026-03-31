@@ -21,6 +21,7 @@
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
+  --input-bg: #f3f4f6;
 }
 
 body.dark {
@@ -41,6 +42,7 @@ body.dark {
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
+  --input-bg: #1e293b;
 }
 
 body {
