@@ -452,7 +452,6 @@ function ActionMenu({
   onDelete: () => void
 }) {
   if (!isOpen) return null
-  debugger;
 
   return (
     <div className="absolute right-0 mt-2 w-32 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg z-50">
