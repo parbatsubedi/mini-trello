@@ -6,7 +6,6 @@ import type { ProjectPayload } from "../types/project"
 type CreateVariables = { payload: ProjectPayload }
 type UpdateVariables = { id: number; payload: ProjectPayload }
 
-const queryClient = useQueryClient()
 export function useGetProject(params: {
   page: number
   per_page: number
@@ -21,6 +20,7 @@ export function useGetProject(params: {
 }
 
 export function useCreateProjectMutation() {
+const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ payload }: CreateVariables) => projectService.createProject(payload),
     onSuccess: () => {
@@ -30,6 +30,7 @@ export function useCreateProjectMutation() {
 }
 
 export function useUpdateProjectMutation() {
+const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, payload }: UpdateVariables) => projectService.updateProject(id, payload),
     onSuccess: () => {
