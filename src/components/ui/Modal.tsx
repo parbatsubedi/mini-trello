@@ -7,7 +7,7 @@ export interface ModalProps {
   onClose: () => void
   title?: string
   children: React.ReactNode
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'screen-70'
   showCloseButton?: boolean
 }
 
@@ -16,7 +16,8 @@ const sizes = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
-  full: 'max-w-4xl'
+  full: 'max-w-4xl',
+  'screen-70': 'w-[70vw] max-w-[70vw]'
 }
 
 export default function Modal({
@@ -52,7 +53,7 @@ export default function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={onClose}
           />
           
@@ -72,7 +73,7 @@ export default function Modal({
             {(title || showCloseButton) && (
               <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
                 {title && (
-                  <h2 className="text-lg font-semibold text-[var(--text)]">
+                  <h2 className="text-base font-medium text-[var(--text)]">
                     {title}
                   </h2>
                 )}
