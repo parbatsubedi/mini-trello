@@ -426,8 +426,8 @@ export default function ProjectDetailPage() {
 
                         <div className="flex items-center gap-2 flex-wrap mb-3">
                           {task.tags.map(tag => (
-                            <span key={tag} className="px-2 py-0.5 text-xs bg-[var(--bg)] text-[var(--text-secondary)] rounded">
-                              {tag}
+                            <span key={tag.id} className="px-2 py-0.5 text-xs bg-[var(--bg)] text-[var(--text-secondary)] rounded">
+                              {tag.name}
                             </span>
                           ))}
                         </div>

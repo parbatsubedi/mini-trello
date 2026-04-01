@@ -30,10 +30,13 @@ export default function DashboardPage() {
     ...stat,
     icon: icons[index], //maps the icons from above array through the index of array in the stats response
   }))
+  console.log("data ",data)
 
 const recentProjects = data?.recentProjects ?? []
 const recentActivity = data?.recentActivity ?? []
 
+console.log('recentProjects', data?.recentProjects)
+console.log('recentActivity', recentActivity)
 if (isLoading) {
   return <AlertOverlay type="loading" message="Loading dashboard data..." />
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import CreateProjectModal from '../../../components/modals/CreateProjectModal'
 import { 
   Plus, 
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useGetProject } from '../../../hooks/useProject'
 import { AlertOverlay } from '../../../components/alert/Alert'
-import type { Project } from '../../../types/types'
+import type { ProjectListItem } from '../../../types/types'
 
 const statusOptions = ['All', 'Active', 'Review', 'Completed', 'Archived']
 
@@ -22,7 +22,7 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [selectedProject, setSelectedProject] = useState<ProjectListItem | null>(null)
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
 
   useEffect(() => {
@@ -38,18 +38,15 @@ export default function ProjectsPage() {
   const navigate = useNavigate()
 
   // API call with params
-  const { data, isLoading, isError, error } = useGetProject({
+  const { data: projects, meta, isLoading, isError, error } = useGetProject({
     page,
     per_page: perPage,
     search: searchQuery || '',
     status: statusFilter || 'All'
   })
 
-  const projects = data?.data ?? []
-  const meta = data?.meta
-
   // Client-side filtering (optional)
-  const filteredProjects = projects.filter(project => {
+  const filteredProjects = projects.filter((project: ProjectListItem) => {
     const matchesStatus =
       statusFilter === 'All' ||
       project.status.toLowerCase() === statusFilter.toLowerCase()

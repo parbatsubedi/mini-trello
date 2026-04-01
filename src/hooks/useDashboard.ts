@@ -5,5 +5,6 @@ export function useDashboard() {
     return useQuery({
         queryKey: ['dashboard'],
         queryFn: () => dashboardService.getDashboardData(),
+        select: (data) => data.data,
     })
 }
