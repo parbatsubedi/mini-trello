@@ -1,5 +1,5 @@
 import { api } from "../lib/api";
-import type { Label } from "../types/label";
+import type { Label } from "../types/types";
 
 export const labelService = {
     getLabels: (types: ('task' | 'project' | 'both')[]) => {

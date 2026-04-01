@@ -1,5 +1,5 @@
 import { api } from "../lib/api";
-import type { Client, ClientPayload } from "../types/client";
+import type { Client, ClientPayload } from "../types/types";
 
 export const clientService = {
     getClients: () => api.get<Client[]>('/clients'),

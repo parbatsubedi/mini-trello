@@ -2,7 +2,6 @@ import Modal from '../ui/Modal'
 import { useEffect, useState } from 'react'
 import { useCreateProjectMutation, useUpdateProjectMutation } from '../../hooks/useProject'
 
-import type { Project, ProjectPayload } from '../../types/project'
 import { AlertOverlay } from '../alert/Alert'
 import { Save, X, Globe, Lock } from 'lucide-react'
 import { MultiSelect } from '../select/multiSelect'
@@ -13,6 +12,7 @@ import { useLabels } from '../../hooks/useLabels'
 import { useClient } from '../../hooks/useClient'
 import { useUsers } from '../../hooks/useUser'
 import { FieldError } from '../errors/fieldError'
+import type { Project, ProjectPayload } from '../../types/types'
 
 type CreateProjectModalProps = {
   isOpen: boolean;

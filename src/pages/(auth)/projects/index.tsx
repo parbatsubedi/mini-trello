@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useGetProject } from '../../../hooks/useProject'
 import { AlertOverlay } from '../../../components/alert/Alert'
-import type { Project } from '../../../types/project'
+import type { Project } from '../../../types/types'
 
 const statusOptions = ['All', 'Active', 'Review', 'Completed', 'Archived']
 
@@ -183,7 +183,7 @@ export default function ProjectsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-[var(--card)] border border-[var(--border)] rounded-xl relative hover:shadow-lg transition-shadow group h-full"
+                className="bg-[var(--card)] border border-[var(--border)] rounded-xl relative hover:shadow-lg transition-shadow group h-full cursor-pointer"
               >
                 {/* Color Bar */}
                 <div className="rounded-t-xl overflow-hidden">

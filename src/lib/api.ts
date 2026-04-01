@@ -52,6 +52,7 @@ class ApiService {
 
       const err = new Error(message) as any
       err.status = 401
+      window.location.href = '/login'
       throw err
     }
 

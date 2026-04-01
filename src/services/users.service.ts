@@ -1,6 +1,6 @@
 import { api } from "../lib/api";
 import type { ApiResponse } from "../types/apiResponse";
-import type { User } from "../types/user";
+import type { User } from "../types/types";
 
 export const usersService = {
     getAllUsers: ()  => api.get<ApiResponse<User[]>>('/users'),
