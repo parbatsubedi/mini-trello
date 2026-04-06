@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useParams } from 'react-router-dom'
-import { 
+import {
   ArrowLeft,
   MoreHorizontal,
   Search,
@@ -26,22 +26,6 @@ import TaskModal, { type TaskFormData } from '../../../components/modals/TaskMod
 
 type TabType = 'overview' | 'tasks' | 'team' | 'settings'
 
-interface TeamMember {
-  id: number
-  name: string
-  email: string
-  avatar: string
-  color: string
-  role: 'owner' | 'admin' | 'member' | 'viewer'
-}
-
-const sampleTeam: TeamMember[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', avatar: 'JD', color: 'from-orange-400 to-red-400', role: 'owner' },
-  { id: 2, name: 'Sarah Kim', email: 'sarah@example.com', avatar: 'SK', color: 'from-blue-400 to-cyan-400', role: 'admin' },
-  { id: 3, name: 'Mike Roberts', email: 'mike@example.com', avatar: 'MR', color: 'from-purple-400 to-pink-400', role: 'member' },
-  { id: 4, name: 'Emily Watson', email: 'emily@example.com', avatar: 'EW', color: 'from-green-400 to-emerald-400', role: 'member' },
-  { id: 5, name: 'Lisa Martinez', email: 'lisa@example.com', avatar: 'LM', color: 'from-indigo-400 to-purple-400', role: 'viewer' },
-]
 
 const statusColumns = [
   { id: 'todo', label: 'To Do', color: 'bg-gray-500' },
@@ -71,12 +55,12 @@ const defaultMemberForm: NewMemberForm = {
 export default function ProjectDetailPage() {
   const params = useParams()
   const projectId = Number(params.projectId)
-  const project = useGetProjectById(projectId)
-  const projectData = project?.data
+  const { data: projectData, refetch } = useGetProjectById(projectId)
   const { data: usersData } = useUsers()
   const users = usersData?.data || []
+  const teamMembers = projectData?.members || []
 
-  const sampleTasks = projectData?.tasks || []
+  const projectTasks = projectData?.tasks || []
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const addMember = useAddMemberMutation()
@@ -96,8 +80,14 @@ export default function ProjectDetailPage() {
   // ── Form State ─────────────────────────────────────────────────────────────
   const [memberForm, setMemberForm] = useState<NewMemberForm>(defaultMemberForm)
 
+  useEffect(() => {
+    if (projectData) {
+      setIsPublic(projectData.visibility === 'open')
+    }
+  }, [projectData])
+
   // ── Handlers ───────────────────────────────────────────────────────────────
-  const handleEditTask = (task: typeof sampleTasks[0]) => {
+  const handleEditTask = (task: typeof projectTasks[0]) => {
     setSelectedTask({
       id: task.id,
       title: task.title,
@@ -132,7 +122,7 @@ export default function ProjectDetailPage() {
   }
 
   // ── Filtering ──────────────────────────────────────────────────────────────
-  const filteredTasks = sampleTasks.filter(task => {
+  const filteredTasks = projectTasks.filter(task => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -170,11 +160,10 @@ export default function ProjectDetailPage() {
               <h1 className="text-2xl font-bold text-[var(--text)]">{projectData?.name}</h1>
               <button
                 onClick={() => setIsPublic(!isPublic)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                  isPublic
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${isPublic
                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                     : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {isPublic ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                 {isPublic ? 'Public' : 'Private'}
@@ -188,7 +177,7 @@ export default function ProjectDetailPage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" />
-                {sampleTeam.length} members
+                {teamMembers.length} members
               </span>
             </div>
           </div>
@@ -196,18 +185,24 @@ export default function ProjectDetailPage() {
 
         <div className="flex items-center gap-2">
           <div className="flex -space-x-2">
-            {sampleTeam.slice(0, 4).map(member => (
+            {teamMembers.slice(0, 4).map(member => (
               <div
                 key={member.id}
-                className={`w-8 h-8 rounded-full bg-gradient-to-br ${member.color} border-2 border-[var(--card)] flex items-center justify-center`}
+                className={`w-8 h-8 rounded-full bg-gradient-to-br border-2 border-[var(--card)] flex items-center justify-center`}
+                style={{
+                  background: 'var(--avatar-bg)',
+                  borderColor: 'var(--avatar-border)',
+                }}
                 title={member.name}
               >
-                <span className="text-white text-xs font-medium">{member.avatar}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--avatar-text)' }}>
+                  {member.name.split(' ').map((word: string) => word[0]).join('')}
+                </span>
               </div>
             ))}
-            {sampleTeam.length > 4 && (
+            {teamMembers.length > 4 && (
               <div className="w-8 h-8 rounded-full bg-[var(--border)] border-2 border-[var(--card)] flex items-center justify-center">
-                <span className="text-xs text-[var(--text-secondary)]">+{sampleTeam.length - 4}</span>
+                <span className="text-xs text-[var(--text-secondary)]">+{teamMembers.length - 4}</span>
               </div>
             )}
           </div>
@@ -224,11 +219,10 @@ export default function ProjectDetailPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as TabType)}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === tab.id
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
                   ? 'border-[var(--primary)] text-[var(--primary)]'
                   : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)]'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -243,8 +237,8 @@ export default function ProjectDetailPage() {
             <h3 className="font-semibold text-[var(--text)] mb-4">Progress Overview</h3>
             <div className="space-y-4">
               {statusColumns.map(column => {
-                const count = sampleTasks.filter(t => t.status === column.id).length
-                const total = sampleTasks.length || 1
+                const count = projectTasks.filter(t => t.status === column.id).length
+                const total = projectTasks.length || 1
                 const percentage = Math.round((count / total) * 100)
                 return (
                   <div key={column.id}>
@@ -270,15 +264,15 @@ export default function ProjectDetailPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-secondary)]">Total Tasks</span>
-                  <span className="font-semibold text-[var(--text)]">{sampleTasks.length}</span>
+                  <span className="font-semibold text-[var(--text)]">{projectTasks.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-secondary)]">Completed</span>
-                  <span className="font-semibold text-green-500">{sampleTasks.filter(t => t.status === 'done').length}</span>
+                  <span className="font-semibold text-green-500">{projectTasks.filter(t => t.status === 'done').length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-secondary)]">In Progress</span>
-                  <span className="font-semibold text-blue-500">{sampleTasks.filter(t => t.status === 'in_progress').length}</span>
+                  <span className="font-semibold text-blue-500">{projectTasks.filter(t => t.status === 'in_progress').length}</span>
                 </div>
               </div>
             </div>
@@ -286,14 +280,24 @@ export default function ProjectDetailPage() {
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
               <h3 className="font-semibold text-[var(--text)] mb-4">Team</h3>
               <div className="space-y-3">
-                {sampleTeam.slice(0, 5).map(member => (
+                {teamMembers.slice(0, 5).map(member => (
                   <div key={member.id} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center`}>
-                      <span className="text-white text-xs font-medium">{member.avatar}</span>
+                    <div
+                      key={member.id}
+                      className={`w-8 h-8 rounded-full bg-gradient-to-br border-2 border-[var(--card)] flex items-center justify-center`}
+                      style={{
+                        background: 'var(--avatar-bg)',
+                        borderColor: 'var(--avatar-border)',
+                      }}
+                      title={member.name}
+                    >
+                      <span className="text-xs font-medium" style={{ color: 'var(--avatar-text)' }}>
+                        {member.name.split(' ').map((word: string) => word[0]).join('')}
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-[var(--text)] truncate">{member.name}</p>
-                      <p className="text-xs text-[var(--text-secondary)]">{member.role}</p>
+                      {/* <p className="text-xs text-[var(--text-secondary)]">{member.role}</p> */}
                     </div>
                   </div>
                 ))}
@@ -353,7 +357,7 @@ export default function ProjectDetailPage() {
               >
                 <option value="all">All Assignees</option>
                 <option value="unassigned">Unassigned</option>
-                {sampleTeam.map(m => (
+                {teamMembers.map(m => (
                   <option key={m.id} value={m.name}>{m.name}</option>
                 ))}
               </select>
@@ -361,17 +365,15 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-1 p-1 bg-[var(--card)] border border-[var(--border)] rounded-lg">
                 <button
                   onClick={() => setViewMode('board')}
-                  className={`p-1.5 rounded-md transition-colors ${
-                    viewMode === 'board' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--border)]'
-                  }`}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'board' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--border)]'
+                    }`}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-1.5 rounded-md transition-colors ${
-                    viewMode === 'list' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--border)]'
-                  }`}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--border)]'
+                    }`}
                 >
                   <List className="w-4 h-4" />
                 </button>
@@ -414,7 +416,7 @@ export default function ProjectDetailPage() {
                           <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${priorityColors[task.priority]}`}>
                             {task.priority}
                           </span>
-                          <button 
+                          <button
                             className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--border)]"
                             onClick={() => handleEditTask(task)}
                           >
@@ -498,12 +500,11 @@ export default function ProjectDetailPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                          task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                          task.status === 'in_progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                          task.status === 'review' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                          'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                        }`}>
+                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${task.status === 'done' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                            task.status === 'in_progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                              task.status === 'review' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
+                          }`}>
                           {task.status.replace('_', ' ')}
                         </span>
                       </td>
@@ -547,7 +548,7 @@ export default function ProjectDetailPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-[var(--text)]">Team Members</h3>
-              <p className="text-[var(--text-secondary)]">{sampleTeam.length} members</p>
+              <p className="text-[var(--text-secondary)]">{teamMembers.length} members</p>
             </div>
             <button
               onClick={() => setShowAddMemberModal(true)}
@@ -559,22 +560,34 @@ export default function ProjectDetailPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sampleTeam.map(member => (
+            {teamMembers.map(member => (
               <div key={member.id} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
                 <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center flex-shrink-0`}>
-                    <span className="text-white font-medium">{member.avatar}</span>
+                  <div
+                    key={member.id}
+                    className={`w-8 h-8 rounded-full bg-gradient-to-br border-2 border-[var(--card)] flex items-center justify-center`}
+                    style={{
+                      background: 'var(--avatar-bg)',
+                      borderColor: 'var(--avatar-border)',
+                    }}
+                    title={member.name}
+                  >
+                    <span className="text-xs font-medium" style={{ color: 'var(--avatar-text)' }}>
+                      {member.name.split(' ').map((word: string) => word[0]).join('')}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-[var(--text)]">{member.name}</h4>
                     <p className="text-sm text-[var(--text-secondary)]">{member.email}</p>
-                    <span className={`inline-block mt-2 px-2.5 py-1 text-xs font-medium rounded-full ${
-                      member.role === 'owner' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
-                      member.role === 'admin' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                      member.role === 'member' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                    <span className={`inline-block mt-2 px-2.5 py-1 text-xs font-medium rounded-full 
+                    ${
+                      // member.role === 'owner' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                      // member.role === 'admin' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                      // member.role === 'member' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                       'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                    }`}>
-                      {member.role}
+                      }`
+                    }>
+                      {/* {member.role} */}
                     </span>
                   </div>
                   <button className="p-1.5 rounded-lg hover:bg-[var(--border)]">
@@ -640,17 +653,17 @@ export default function ProjectDetailPage() {
         </div>
       )}
 
-      {/* ── Task Modal (Create/Edit) ──────────────────────────────────────────────── */}
-      {showNewTaskModal && (
-        <TaskModal
-          isOpen={showNewTaskModal}
-          onClose={() => { setShowNewTaskModal(false); setSelectedTask(null) }}
-          task={selectedTask}
-          projectId={projectId}
-          users={users}
-          onSuccess={() => {}}
-        />
-      )}
+      {/* ── Task Modal (Create/Edit, no need condition, it is handled by isOpen) ──────────────────────────────────────────────── */}
+      {/* {showNewTaskModal && ( */}
+      <TaskModal
+        isOpen={showNewTaskModal}
+        onClose={() => { setShowNewTaskModal(false); setSelectedTask(null) }}
+        task={selectedTask}
+        projectId={projectId}
+        users={users}
+        onSuccess={refetch}
+      />
+      {/* )} */}
 
       {/* ── Add Member Modal ──────────────────────────────────────────────────── */}
       {showAddMemberModal && (
