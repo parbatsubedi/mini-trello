@@ -22,6 +22,9 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --input-bg: #f3f4f6;
+  --avatar-bg: #e5e7eb;
+  --avatar-text: #111827;
+  --avatar-border: #ffffff;
 }
 
 body.dark {
@@ -43,6 +46,9 @@ body.dark {
   --warning: #fbbf24;
   --danger: #f87171;
   --input-bg: #1e293b;
+  --avatar-bg: #374151;
+  --avatar-text: #f9fafb;
+  --avatar-border: #111827;
 }
 
 body {
