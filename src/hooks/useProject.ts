@@ -42,7 +42,9 @@ export function useGetProjectById(projectId: number) {
     queryKey: ['project', projectId],
     queryFn: () => projectService.getProjectById(projectId),
     select: (data) => data.data,
-    placeholderData: (prevData) => prevData
+    enabled: !!projectId, //prevent query from running if projectId is not provided or null undefined and other falsy values
+    placeholderData: (prevData) => prevData,
+    
   })
 }
 
