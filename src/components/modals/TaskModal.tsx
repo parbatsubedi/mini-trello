@@ -30,6 +30,7 @@ export interface TaskFormData {
   due_date: string
   assignee_id: number | null
   assigned_users: number[]
+  collaborators?: number[]
 }
 
 const statusOptions = [
@@ -75,6 +76,7 @@ const makeEmpty = (): TaskFormData => ({
   due_date: '',
   assignee_id: null,
   assigned_users: [],
+  collaborators: [],
 })
 
 export default function TaskModal({
@@ -111,6 +113,7 @@ export default function TaskModal({
         due_date: task.due_date || '',
         assignee_id: task.assignee_id,
         assigned_users: task.assigned_users || [],
+        collaborators: task.collaborators || [],
       })
     } else {
       reset()
@@ -131,10 +134,12 @@ export default function TaskModal({
       due_date: formData.due_date || undefined,
       project_id: projectId,
       assignee_id: formData.assignee_id || undefined,
+      assigned_users: formData.assigned_users || [],
+      collaborators: formData.collaborators || [],
     }
 
     try {
-      const taskId = isEditMode ? task!.id : 0
+      const taskId = isEditMode ? task!.id : null
 
       if (isEditMode) {
         await updateMutation.mutateAsync({ 
@@ -301,8 +306,8 @@ export default function TaskModal({
             <div className="pt-1">
               <MultiSelect
                 options={userOptions}
-                value={formData.assigned_users}
-                onChange={val => set('assigned_users', val as number[])}
+                value={formData.collaborators || []}
+                onChange={val => set('collaborators', val as number[])}
                 placeholder="Select collaborators..."
                 styles={{
                   trigger: 'min-h-[38px] flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-md bg-[var(--input-bg)] border border-transparent cursor-pointer focus-within:ring-1 focus-within:ring-[var(--primary)] transition-all duration-150',
@@ -312,7 +317,7 @@ export default function TaskModal({
                 }}
               />
             </div>
-            <FieldError msg={getError('assigned_users')} />
+            <FieldError msg={getError('collaborators')} />
           </Row>
 
         </div>
