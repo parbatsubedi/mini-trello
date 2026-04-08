@@ -88,13 +88,12 @@ const [errors, setErrors]     = useState<Record<string, string[]>>({})
 const createMutation = useCreateProjectMutation()
 const updateMutation = useUpdateProjectMutation()
 
-const { data: labelOptions =[] } = useLabels(['project', 'both'])
+const { data: labelData } = useLabels({ types: ['project', 'both'] })
+const labelOptions = labelData?.data ?? []
 const {data : clientOptions = []} = useClient()
-const { data: memberOptions} = useUsers()
+const { data: memberOptions = []} = useUsers()
 
-console.log('Label options:', memberOptions?.data || [])
-
-const selectOptions = memberOptions?.data.map(u => ({ id: u.id, label: u.name })) || []
+const selectOptions = memberOptions.map(u => ({ id: u.id, label: u.name }))
 
   useEffect(() => {
     if (selectedProject) {

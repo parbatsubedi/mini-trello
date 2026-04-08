@@ -1,6 +1,6 @@
 import { api } from "../lib/api"
-import type { PaginatedApiResponse, SingleApiResponse } from "../types/types"
 import type { Project, ProjectPayload, ProjectListItem } from "../types/types"
+import type { PaginatedResponse, ApiResponse } from "../lib/response"
 
 interface ProjectQueryParams {
   page?: number
@@ -18,11 +18,11 @@ export const projectService = {
     if (params.search) query.append('search', params.search)
     if (params.status && params.status !== 'All') query.append('status', params.status)
 
-    return api.get<PaginatedApiResponse<ProjectListItem>>(`/projects?${query.toString()}`)
+    return api.get<PaginatedResponse<ProjectListItem>>(`/projects?${query.toString()}`)
   },
 
   getProjectById: (projectId: number) => {
-    return api.get<SingleApiResponse<Project>>(`/projects/${projectId}`)
+    return api.get<ApiResponse<Project>>(`/projects/${projectId}`)
   },
 
   updateProject: (projectId: number, data: ProjectPayload) => {
@@ -33,7 +33,7 @@ export const projectService = {
     return api.delete(`/projects/${projectId}`)
   },
 
-  createProject : (data: ProjectPayload) => {
+  createProject: (data: ProjectPayload) => {
     return api.post(`/projects`, data)
   }
 }

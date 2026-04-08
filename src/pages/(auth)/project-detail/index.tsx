@@ -56,8 +56,7 @@ export default function ProjectDetailPage() {
   const params = useParams()
   const projectId = Number(params.projectId)
   const { data: projectData, refetch } = useGetProjectById(projectId)
-  const { data: usersData } = useUsers()
-  const users = usersData?.data || []
+  const { data: usersData = [] } = useUsers()
   const teamMembers = projectData?.members || []
 
   const projectTasks = projectData?.tasks || []
@@ -660,7 +659,7 @@ export default function ProjectDetailPage() {
         onClose={() => { setShowNewTaskModal(false); setSelectedTask(null) }}
         task={selectedTask}
         projectId={projectId}
-        users={users}
+        users={usersData}
         onSuccess={refetch}
       />
       {/* )} */}

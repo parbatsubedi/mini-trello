@@ -1,6 +1,7 @@
 import { api } from "../lib/api";
-import type { DashboardApiResponse } from "../types/types";
+import type { ApiResponse } from "../lib/response";
+import type { DashboardData } from "../types/types";
 
 export const dashboardService = {
-    getDashboardData: () => api.get<DashboardApiResponse>('/dashboard'),
+    getDashboardData: () => api.get<ApiResponse<DashboardData>>('/dashboard'),
 }

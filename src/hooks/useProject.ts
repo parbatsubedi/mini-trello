@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { projectService } from "../services/project.service"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { ProjectPayload, ProjectListItem, MetaType, LinksType } from "../types/types"
+import { extractPaginatedData, extractSingleData } from "../lib/response"
 
 type CreateVariables = { payload: ProjectPayload }
 type UpdateVariables = { id: number; payload: ProjectPayload }
@@ -27,10 +28,12 @@ export function useGetProject(params: {
     placeholderData: (prevData) => prevData
   })
 
+  const paginatedData = extractPaginatedData<ProjectListItem>(query.data)
+
   return {
-    data: query.data?.data ?? [],
-    meta: query.data?.meta,
-    links: query.data?.links,
+    data: paginatedData?.data ?? [],
+    meta: paginatedData?.meta,
+    links: paginatedData?.links,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error as Error | null,
@@ -41,27 +44,38 @@ export function useGetProjectById(projectId: number) {
   return useQuery({
     queryKey: ['project', projectId],
     queryFn: () => projectService.getProjectById(projectId),
-    select: (data) => data.data,
-    enabled: !!projectId, //prevent query from running if projectId is not provided or null undefined and other falsy values
+    select: (data) => extractSingleData<ProjectListItem>(data),
+    enabled: !!projectId,
     placeholderData: (prevData) => prevData,
-    
   })
 }
 
 export function useCreateProjectMutation() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ payload }: CreateVariables) => projectService.createProject(payload),
     onSuccess: () => {
-      window.location.reload()
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })
 }
 
 export function useUpdateProjectMutation() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, payload }: UpdateVariables) => projectService.updateProject(id, payload),
     onSuccess: () => {
-      window.location.reload()
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    },
+  })
+}
+
+export function useDeleteProjectMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => projectService.deleteProject(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })
 }
