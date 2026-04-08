@@ -15,7 +15,8 @@ import {
   Users,
   Building2,
   Shield,
-  Tag
+  Tag,
+  Badge,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { authService } from '../services/auth.service'
@@ -29,6 +30,8 @@ const navItems = [
   { icon: Shield, label: 'Roles', path: '/roles' },
   { icon: Tag, label: 'Tags', path: '/tags' },
   { icon: Settings, label: 'Settings', path: '/settings' },
+  {icon: Badge, label: 'Labels', path: '/labels' },
+  {icon: Users, label: 'Clients', path: '/clients' }
 ]
 
 export default function AuthLayout({ children }: PropsWithChildren) {
