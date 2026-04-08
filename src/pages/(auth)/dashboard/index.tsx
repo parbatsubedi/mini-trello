@@ -57,10 +57,10 @@ if (isError) {
           <h1 className="text-2xl font-bold text-[var(--text)]">Dashboard</h1>
           <p className="text-[var(--text-secondary)]">Welcome back! Here's your project overview.</p>
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white font-medium rounded-lg hover:opacity-90 transition-all">
+        {/* <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white font-medium rounded-lg hover:opacity-90 transition-all">
           <Plus className="w-5 h-5" />
           New Project
-        </button>
+        </button> */}
       </div>
 
       {/* Stats Grid */}
