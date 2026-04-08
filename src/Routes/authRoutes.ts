@@ -76,6 +76,12 @@ const authRoutes: AppRoute[] = [
         layouts: [AuthLayout],
         guards: [RequireAuth],
     },
+    {
+        path: '/clients',
+        lazy: () => import('../pages/(auth)/clients'),
+        layouts: [AuthLayout],
+        guards: [RequireAuth],
+    },
 ]
 
 export default authRoutes
