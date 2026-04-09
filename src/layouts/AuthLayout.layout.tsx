@@ -23,6 +23,8 @@ import { authService } from '../services/auth.service'
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  {icon: Badge, label: 'Labels', path: '/labels' },
+  {icon: Users, label: 'Clients', path: '/clients' },
   { icon: FolderKanban, label: 'Projects', path: '/projects' },
   { icon: History, label: 'Activity', path: '/activity' },
   { icon: Users, label: 'Team', path: '/team' },
@@ -30,8 +32,6 @@ const navItems = [
   { icon: Shield, label: 'Roles', path: '/roles' },
   { icon: Tag, label: 'Tags', path: '/tags' },
   { icon: Settings, label: 'Settings', path: '/settings' },
-  {icon: Badge, label: 'Labels', path: '/labels' },
-  {icon: Users, label: 'Clients', path: '/clients' }
 ]
 
 export default function AuthLayout({ children }: PropsWithChildren) {
